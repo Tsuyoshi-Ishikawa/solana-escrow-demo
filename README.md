@@ -17,6 +17,27 @@ Currently implemented under `rust` directory
   - [solana-sandbox](https://github.com/tomoima525/solana-sandbox)
   - [Program Derived Address日本語で](https://efficacious-flat-24a.notion.site/Program-Derived-Address-8537ebca002245639beb531842f87f2c)
 
+<br>
+If Alice's X token is exchanged for Bob's Y token + Alice becomes the initializer and Bob becomes the taker.
+
+> I'll be referring to Alice as the initializer and Bob as the taker in the code (Alice inits the escrow, Bob takes the trade. Pls let me know if you can come up with better naming)
+
+escrow init
+
+1. Alice (initializer) creates a temporary account (temp token account).
+2. pass the X token you want to pass to the temp token account. 
+3. change the owner of the temp token account to PDA. 
+4. save the terms of the exchange transaction in the escrow account
+    - Which is Alice's token account to receive Y
+    - Which temp token account
+
+escrow exchange
+
+1. check the terms and conditions of the exchange transaction stored in the escrow account and make sure they are OK.
+2. Y token is sent from bob's token account to Alice's token account. Signature is done by bob.
+3. X token is sent from Alice's temporarily created token account to bob's token account. The authority of Alice's temp token account is in pda, so it is executed with pda's authority.
+4. delete the temp token account created by Alice.
+
 ## Client
 
 ### Mint & add metadata on NFT
