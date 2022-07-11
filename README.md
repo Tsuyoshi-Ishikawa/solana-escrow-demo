@@ -64,7 +64,13 @@ $ yarn install
 - Set up local network for Solana
 
 ```
-$ solana config set --url localhost // point to local or else it will be deployed to other clusters that you set
+$ solana config set --url localhost --keypair {wallet path} // point to local or else it will be deployed to other clusters that you set
+```
+
+- airdrop
+```
+$ solana airdrop 1 {wallet public key} --url localhost
+$ solana balance // confirmation
 ```
 
 - Start local validator
