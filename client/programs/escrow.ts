@@ -157,6 +157,9 @@ export async function createEscrowAccountInstruction({
   payer: Signer;
   programId: PublicKey;
 }): Promise<TransactionInstruction> {
+  // createAccountの引数であるprogramIdがownerになるように
+  // accountはつくられる
+  // https://solana-labs.github.io/solana-web3.js/classes/SystemProgram.html#createAccount
   return SystemProgram.createAccount({
     programId,
     space: ESCROW_ACCOUNT_DATA_LAYOUT.span,

@@ -84,6 +84,10 @@ export async function simulateInitEscrow({
   );
 
   console.log('Create escrowToken');
+  // 取引のデータをやり取りするaccountを作成
+  // createEscrowAccountInstructionで渡しているprogramIdがownerになるように
+  // escrowAccountはつくられる。
+  // なのでsmart contract側でescrowAccountの書き込みが可能
   const escrowAccount = Keypair.generate();
   instructions.push(
     await createEscrowAccountInstruction({

@@ -82,7 +82,10 @@ impl Processor {
     // Make sure Token Account is owned by Token Program
     assert_owned_by(token_to_receive_account, &spl_token::id())?;
 
-    let escrow_account: &AccountInfo = next_account_info(account_info_iter)?; // escrowするアカウント
+    // このaccountはescrowするアカウントではなく、
+    // 取引のやり取り情報を確認して、実際に交換(process_exchange)するときに確認する
+    // 実際にtemp_token_accountの権限を持つのは、PDAである
+    let escrow_account: &AccountInfo = next_account_info(account_info_iter)?;
 
     let rent: &Rent = &Rent::from_account_info(next_account_info(account_info_iter)?)?; // rentを計算するaccount
 
@@ -106,6 +109,8 @@ impl Processor {
     let escrow_seed = &["escrow".as_bytes(), program_id.as_ref()];
 
     // Program derived address for Cross Program Invocation
+    // find_program_addressで"escrow"というseedとこのsmart contractのprogram_idで、PDAを作っている
+    // https://docs.rs/solana-program/1.4.4/solana_program/pubkey/struct.Pubkey.html#method.find_program_address
     let (pda_key, _bump_seed) = Pubkey::find_program_address(escrow_seed, program_id);
 
     let token_program: &AccountInfo = next_account_info(account_info_iter)?; // token program(すべてのtoken accountが従属(belongs to)するprogram。ownerを別のownerにできる)
@@ -117,6 +122,7 @@ impl Processor {
     // owner_pubkey: &Pubkey,
     // signer_pubkeys: &[&Pubkey])
 
+    // temp_token_accountの権限をPDAに委任するためのinstruction
     let owner_change_instruction = instruction::set_authority(
       token_program.key,
       temp_token_account.key,
@@ -156,6 +162,7 @@ impl Processor {
     let escrow_seed = &["escrow".as_bytes(), program_id.as_ref()];
 
     // Find a valid program address and its corresponding bump seed which must be passed as an additional seed when calling invoke_signed
+    // temp_token_accountの権限をもつpdaを探してくる。
     let (pda_key, bump_seed) = Pubkey::find_program_address(escrow_seed, program_id);
 
     msg!(
